@@ -277,16 +277,6 @@ REFRESH_TOKEN_SECRET=your-refresh-secret
 4. Push to branch
 5. Create Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 📞 Support
-
-Untuk dukungan teknis, hubungi:
-- Email: support@desamajubersama.id
-- WhatsApp: +62 812-3456-7890
-
 ---
 
 **Sistem Informasi Desa** - Membangun desa digital yang transparan dan efisien.
