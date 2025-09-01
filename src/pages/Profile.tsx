@@ -8,6 +8,15 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../hooks/useAuth';
 import { usersAPI } from '../services/api';
 
+interface ApiError extends Error {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
+
 const profileSchema = yup.object({
   fullName: yup.string().min(2, 'Nama minimal 2 karakter').required('Nama lengkap diperlukan'),
   phone: yup.string().optional(),
@@ -56,8 +65,9 @@ const Profile = () => {
     try {
       await usersAPI.updateProfile(data);
       toast.success('Profile berhasil diupdate!');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Gagal update profile');
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      toast.error(apiError.response?.data?.message || 'Gagal update profile');
     }
   };
 
@@ -69,8 +79,9 @@ const Profile = () => {
       });
       toast.success('Password berhasil diubah!');
       resetPassword();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Gagal ubah password');
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      toast.error(apiError.response?.data?.message || 'Gagal ubah password');
     }
   };
 
@@ -139,7 +150,7 @@ const Profile = () => {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => setActiveTab(tab.id as any)}
+                      onClick={() => setActiveTab(tab.id as 'profile' | 'password')}
                       className={`flex items-center space-x-2 px-6 py-4 border-b-2 font-medium text-sm transition-colors ${
                         activeTab === tab.id
                           ? 'border-blue-500 text-blue-600 dark:text-blue-400'

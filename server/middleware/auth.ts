@@ -11,6 +11,10 @@ export interface AuthenticatedRequest extends Request {
   };
 }
 
+interface JwtPayload {
+  userId: string;
+}
+
 export const authenticateToken = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -24,7 +28,7 @@ export const authenticateToken = async (
       return res.status(401).json({ message: 'Access token required' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
     
     // Verify user still exists and is active
     const client = await pool.connect();
@@ -47,6 +51,7 @@ export const authenticateToken = async (
 
     next();
   } catch (error) {
+    console.error(error);
     return res.status(403).json({ message: 'Invalid token' });
   }
 };

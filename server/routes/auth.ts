@@ -142,6 +142,10 @@ router.post('/login', asyncHandler(async (req: express.Request, res: express.Res
   }
 }));
 
+interface RefreshTokenPayload {
+  userId: string;
+}
+
 // Refresh token
 router.post('/refresh', asyncHandler(async (req: express.Request, res: express.Response) => {
   const { refreshToken } = req.body;
@@ -151,7 +155,7 @@ router.post('/refresh', asyncHandler(async (req: express.Request, res: express.R
   }
 
   try {
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as any;
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as RefreshTokenPayload;
     
     const client = await pool.connect();
     const result = await client.query(
@@ -173,6 +177,7 @@ router.post('/refresh', asyncHandler(async (req: express.Request, res: express.R
 
     res.json({ accessToken: newAccessToken });
   } catch (error) {
+    console.error(error);
     return res.status(403).json({ message: 'Invalid refresh token' });
   }
 }));

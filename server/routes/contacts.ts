@@ -26,11 +26,11 @@ router.get('/', asyncHandler(async (req: express.Request, res: express.Response)
   
   try {
     let query = 'SELECT * FROM contacts WHERE 1=1';
-    const params: any[] = [];
+    const params: (string | number)[] = [];
 
     if (department) {
-      query += ` AND department = $${params.length + 1}`;
-      params.push(department);
+      query += ` AND department = ${params.length + 1}`;
+      params.push(String(department));
     }
 
     if (search) {

@@ -12,9 +12,24 @@ import {
   List
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { format, startOfMonth, endOfMonth } from 'date-fns';
+import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { eventsAPI } from '../services/api';
+
+interface Event {
+  id: string;
+  title: string;
+  description?: string;
+  start_date: string;
+  end_date?: string;
+  location?: string;
+  organizer?: string;
+  max_participants?: number;
+  current_participants?: number;
+  category: string;
+  created_at: string;
+}
+
 
 const Events = () => {
   const [viewMode, setViewMode] = useState<'calendar' | 'list'>('list');
@@ -48,13 +63,13 @@ const Events = () => {
     }
   };
 
-  const isEventOnDate = (event: any, date: Date) => {
+  const isEventOnDate = (event: Event, date: Date) => {
     const eventDate = new Date(event.start_date);
     return eventDate.toDateString() === date.toDateString();
   };
 
   const getEventsForDate = (date: Date) => {
-    return eventsData?.data?.events?.filter((event: any) => isEventOnDate(event, date)) || [];
+    return eventsData?.data?.events?.filter((event: Event) => isEventOnDate(event, date)) || [];
   };
 
   return (
@@ -162,7 +177,7 @@ const Events = () => {
 
               <div className="space-y-4">
                 {getEventsForDate(selectedDate).length > 0 ? (
-                  getEventsForDate(selectedDate).map((event: any) => (
+                  getEventsForDate(selectedDate).map((event: Event) => (
                     <div key={event.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="font-semibold text-gray-900 dark:text-white">{event.title}</h4>
@@ -214,7 +229,7 @@ const Events = () => {
               </div>
             ))
           ) : (
-            eventsData?.data?.events?.map((event: any, index: number) => (
+            eventsData?.data?.events?.map((event: Event, index: number) => (
               <motion.div
                 key={event.id}
                 initial={{ opacity: 0, y: 20 }}

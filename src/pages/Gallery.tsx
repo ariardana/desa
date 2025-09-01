@@ -6,10 +6,20 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { galleryAPI } from '../services/api';
 
+interface GalleryItem {
+  id: string;
+  title: string;
+  description?: string;
+  mime_type: string;
+  category: string;
+  uploaded_by_name: string;
+  created_at: string;
+}
+
 const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
 
   const { data: galleryData, isLoading } = useQuery(
     ['gallery', searchTerm, selectedCategory],
@@ -112,7 +122,7 @@ const Gallery = () => {
           animate={{ opacity: 1 }}
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
         >
-          {galleryData?.data?.gallery?.map((item: any, index: number) => (
+          {galleryData?.data?.gallery?.map((item: GalleryItem, index: number) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 20 }}

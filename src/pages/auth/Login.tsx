@@ -8,6 +8,15 @@ import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
 
+interface ApiError extends Error {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
+
 const schema = yup.object({
   email: yup.string().email('Email tidak valid').required('Email diperlukan'),
   password: yup.string().required('Password diperlukan'),
@@ -35,8 +44,9 @@ const Login = () => {
       await login(data.email, data.password);
       toast.success('Login berhasil!');
       navigate('/');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login gagal');
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      toast.error(apiError.response?.data?.message || 'Login gagal');
     } finally {
       setIsLoading(false);
     }

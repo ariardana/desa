@@ -29,7 +29,7 @@ router.get('/', authenticateToken, asyncHandler(async (req: AuthenticatedRequest
       LEFT JOIN users u ON c.user_id = u.id 
       LEFT JOIN users a ON c.assigned_to = a.id
     `;
-    const params: any[] = [];
+    const params: (string | number)[] = [];
 
     // Role-based filtering
     if (req.user!.role === 'warga') {
@@ -40,13 +40,13 @@ router.get('/', authenticateToken, asyncHandler(async (req: AuthenticatedRequest
     }
 
     if (status) {
-      query += ` AND c.status = $${params.length + 1}`;
-      params.push(status);
+      query += ` AND c.status = ${params.length + 1}`;
+      params.push(String(status));
     }
 
     if (category) {
-      query += ` AND c.category = $${params.length + 1}`;
-      params.push(category);
+      query += ` AND c.category = ${params.length + 1}`;
+      params.push(String(category));
     }
 
     query += ` ORDER BY c.priority DESC, c.created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;

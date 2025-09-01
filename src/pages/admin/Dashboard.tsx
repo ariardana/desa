@@ -4,17 +4,37 @@ import {
   Users, 
   Megaphone, 
   MessageSquare, 
-  Calendar,
   FileText,
-  TrendingUp,
-  Activity,
-  Clock
+  Activity
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { dashboardAPI } from '../../services/api';
+
+interface StatCardProps {
+  icon: React.ElementType;
+  title: string;
+  value: number;
+  change: number;
+  color: string;
+}
+
+interface Complaint {
+  id: string;
+  title: string;
+  user_name: string;
+  status: string;
+  created_at: string;
+}
+
+interface ComplaintsByStatus {
+  name: string;
+  percent: number;
+  count: number;
+}
+
 
 const Dashboard = () => {
   const { data: statsData, isLoading: statsLoading } = useQuery(
@@ -22,7 +42,7 @@ const Dashboard = () => {
     dashboardAPI.getStats
   );
 
-  const { data: analyticsData, isLoading: analyticsLoading } = useQuery(
+  const { data: analyticsData } = useQuery(
     ['dashboard-analytics', '30d'],
     () => dashboardAPI.getAnalytics('30d')
   );
@@ -32,7 +52,7 @@ const Dashboard = () => {
 
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
 
-  const StatCard = ({ icon: Icon, title, value, change, color }: any) => (
+  const StatCard = ({ icon: Icon, title, value, change, color }: StatCardProps) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -173,12 +193,12 @@ const Dashboard = () => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }: any) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                label={({ name, percent }: { name: string; percent: number }) => `${name} (${(percent * 100).toFixed(0)}%)`}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="count"
               >
-                {(stats?.complaintsByStatus || []).map((entry: any, index: number) => (
+                {(stats?.complaintsByStatus || []).map((entry: ComplaintsByStatus, index: number) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
@@ -201,7 +221,7 @@ const Dashboard = () => {
         
         {stats?.recentComplaints?.length > 0 ? (
           <div className="space-y-4">
-            {stats.recentComplaints.map((complaint: any) => (
+            {stats.recentComplaints.map((complaint: Complaint) => (
               <div key={complaint.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">

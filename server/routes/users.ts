@@ -33,7 +33,7 @@ router.get('/',
         SELECT id, email, full_name, role, is_active, phone, address, created_at 
         FROM users WHERE 1=1
       `;
-      const params: any[] = [];
+      const params: (string | number)[] = [];
 
       if (search) {
         query += ` AND (full_name ILIKE $${params.length + 1} OR email ILIKE $${params.length + 1})`;
@@ -41,8 +41,8 @@ router.get('/',
       }
 
       if (role) {
-        query += ` AND role = $${params.length + 1}`;
-        params.push(role);
+        query += ` AND role = ${params.length + 1}`;
+        params.push(String(role));
       }
 
       query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;

@@ -32,11 +32,11 @@ router.get('/', asyncHandler(async (req: express.Request, res: express.Response)
       LEFT JOIN users u ON e.created_by = u.id 
       WHERE e.is_public = true
     `;
-    const params: any[] = [];
+    const params: (string | number)[] = [];
 
     if (category) {
-      query += ` AND e.category = $${params.length + 1}`;
-      params.push(category);
+      query += ` AND e.category = ${params.length + 1}`;
+      params.push(String(category));
     }
 
     if (month && year) {

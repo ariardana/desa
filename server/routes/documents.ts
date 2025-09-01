@@ -28,11 +28,11 @@ router.get('/', asyncHandler(async (req: express.Request, res: express.Response)
       LEFT JOIN users u ON d.uploaded_by = u.id 
       WHERE d.is_public = true
     `;
-    const params: any[] = [];
+    const params: (string | number)[] = [];
 
     if (category) {
-      query += ` AND d.category = $${params.length + 1}`;
-      params.push(category);
+      query += ` AND d.category = ${params.length + 1}`;
+      params.push(String(category));
     }
 
     if (search) {

@@ -4,8 +4,6 @@ import {
   Search, 
   Filter, 
   Download, 
-  FileText, 
-  File, 
   Calendar,
   Eye,
   FolderOpen
@@ -14,6 +12,18 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { documentsAPI } from '../services/api';
+
+interface Document {
+  id: string;
+  title: string;
+  description?: string;
+  mime_type: string;
+  category: string;
+  file_size: number;
+  download_count: number;
+  created_at: string;
+}
+
 
 const Documents = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -145,7 +155,7 @@ const Documents = () => {
           animate={{ opacity: 1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {documentsData?.data?.documents?.map((document: any, index: number) => (
+          {documentsData?.data?.documents?.map((document: Document, index: number) => (
             <motion.div
               key={document.id}
               initial={{ opacity: 0, y: 20 }}

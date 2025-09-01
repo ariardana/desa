@@ -8,6 +8,15 @@ import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../hooks/useAuth';
 
+interface ApiError extends Error {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
+
 const schema = yup.object({
   fullName: yup.string().min(2, 'Nama minimal 2 karakter').required('Nama lengkap diperlukan'),
   email: yup.string().email('Email tidak valid').required('Email diperlukan'),
@@ -37,12 +46,14 @@ const Register = () => {
   const onSubmit = async (data: RegisterForm) => {
     setIsLoading(true);
     try {
-      const { confirmPassword, ...userData } = data;
+      const { ...userData } = data;
+      delete (userData as { confirmPassword?: string }).confirmPassword;
       await registerUser(userData);
       toast.success('Registrasi berhasil!');
       navigate('/');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Registrasi gagal');
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      toast.error(apiError.response?.data?.message || 'Registrasi gagal');
     } finally {
       setIsLoading(false);
     }

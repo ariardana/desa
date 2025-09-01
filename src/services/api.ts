@@ -1,5 +1,63 @@
 import axios from 'axios';
 
+// Interfaces
+interface RegisterData {
+  fullName: string;
+  email: string;
+  phone?: string;
+  address?: string;
+}
+
+interface GetAllParams {
+  search?: string;
+  category?: string;
+  month?: number;
+  year?: number;
+}
+
+interface AnnouncementData {
+  title: string;
+  content: string;
+  category: string;
+}
+
+interface UpdateStatusData {
+  status: string;
+}
+
+interface RateData {
+  rating: number;
+  comment: string;
+}
+
+interface EventData {
+  title: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  location: string;
+  category: string;
+}
+
+interface ContactData {
+  name: string;
+  position: string;
+  phone: string;
+  email: string;
+}
+
+interface UpdateProfileData {
+  fullName: string;
+  phone?: string;
+  address?: string;
+}
+
+interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
@@ -37,7 +95,7 @@ api.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           
           return api(originalRequest);
-        } catch (refreshError) {
+        } catch {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           window.location.href = '/login';
@@ -54,7 +112,7 @@ export const authAPI = {
   login: (email: string, password: string) => 
     api.post('/auth/login', { email, password }),
   
-  register: (userData: any) => 
+  register: (userData: RegisterData) => 
     api.post('/auth/register', userData),
   
   getCurrentUser: () => 
@@ -66,13 +124,13 @@ export const authAPI = {
 
 // Announcements API
 export const announcementsAPI = {
-  getAll: (params?: any) => 
+  getAll: (params?: GetAllParams) => 
     api.get('/announcements', { params }),
   
-  create: (data: any) => 
+  create: (data: AnnouncementData) => 
     api.post('/announcements', data),
   
-  update: (id: string, data: any) => 
+  update: (id: string, data: AnnouncementData) => 
     api.put(`/announcements/${id}`, data),
   
   delete: (id: string) => 
@@ -81,7 +139,7 @@ export const announcementsAPI = {
 
 // Complaints API
 export const complaintsAPI = {
-  getAll: (params?: any) => 
+  getAll: (params?: GetAllParams) => 
     api.get('/complaints', { params }),
   
   create: (data: FormData) => 
@@ -89,22 +147,22 @@ export const complaintsAPI = {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
   
-  updateStatus: (id: string, data: any) => 
+  updateStatus: (id: string, data: UpdateStatusData) => 
     api.patch(`/complaints/${id}/status`, data),
   
-  rate: (id: string, data: any) => 
+  rate: (id: string, data: RateData) => 
     api.patch(`/complaints/${id}/rate`, data),
 };
 
 // Events API
 export const eventsAPI = {
-  getAll: (params?: any) => 
+  getAll: (params?: GetAllParams) => 
     api.get('/events', { params }),
   
-  create: (data: any) => 
+  create: (data: EventData) => 
     api.post('/events', data),
   
-  update: (id: string, data: any) => 
+  update: (id: string, data: EventData) => 
     api.put(`/events/${id}`, data),
   
   delete: (id: string) => 
@@ -113,7 +171,7 @@ export const eventsAPI = {
 
 // Documents API
 export const documentsAPI = {
-  getAll: (params?: any) => 
+  getAll: (params?: GetAllParams) => 
     api.get('/documents', { params }),
   
   upload: (data: FormData) => 
@@ -130,7 +188,7 @@ export const documentsAPI = {
 
 // Gallery API
 export const galleryAPI = {
-  getAll: (params?: any) => 
+  getAll: (params?: GetAllParams) => 
     api.get('/gallery', { params }),
   
   upload: (data: FormData) => 
@@ -144,13 +202,13 @@ export const galleryAPI = {
 
 // Contacts API
 export const contactsAPI = {
-  getAll: (params?: any) => 
+  getAll: (params?: GetAllParams) => 
     api.get('/contacts', { params }),
   
-  create: (data: any) => 
+  create: (data: ContactData) => 
     api.post('/contacts', data),
   
-  update: (id: string, data: any) => 
+  update: (id: string, data: ContactData) => 
     api.put(`/contacts/${id}`, data),
   
   delete: (id: string) => 
@@ -168,13 +226,13 @@ export const dashboardAPI = {
 
 // Users API
 export const usersAPI = {
-  getAll: (params?: any) => 
+  getAll: (params?: GetAllParams) => 
     api.get('/users', { params }),
   
-  updateProfile: (data: any) => 
+  updateProfile: (data: UpdateProfileData) => 
     api.put('/users/profile', data),
   
-  changePassword: (data: any) => 
+  changePassword: (data: ChangePasswordData) => 
     api.put('/users/password', data),
   
   updateRole: (id: string, role: string) => 

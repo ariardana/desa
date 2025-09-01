@@ -11,7 +11,7 @@ import {
   X
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../hooks/useTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Header = () => {

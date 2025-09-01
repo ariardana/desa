@@ -34,6 +34,27 @@ const complaintSchema = yup.object({
 
 type ComplaintForm = yup.InferType<typeof complaintSchema>;
 
+interface Complaint {
+  id: string | number;
+  title: string;
+  user_name: string;
+  created_at: string;
+  status: string;
+  description: string;
+  location?: string;
+  attachments: string; // This is a JSON string
+  response?: string;
+  rating?: number;
+  user_id: string;
+}
+
+interface Attachment {
+  filename: string;
+  originalName: string;
+  path: string;
+  size: number;
+}
+
 const Complaints = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -67,8 +88,13 @@ const Complaints = () => {
       reset();
       setSelectedFiles(null);
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Gagal submit aduan');
+    onError: (error: unknown) => {
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        toast.error(err.response?.data?.message || 'Gagal submit aduan');
+      } else {
+        toast.error('Gagal submit aduan');
+      }
     },
   });
 
@@ -80,8 +106,13 @@ const Complaints = () => {
         toast.success('Rating berhasil diberikan!');
         queryClient.invalidateQueries(['complaints']);
       },
-      onError: (error: any) => {
-        toast.error(error.response?.data?.message || 'Gagal memberikan rating');
+      onError: (error: unknown) => {
+        if (typeof error === 'object' && error !== null && 'response' in error) {
+          const err = error as { response?: { data?: { message?: string } } };
+          toast.error(err.response?.data?.message || 'Gagal memberikan rating');
+        } else {
+          toast.error('Gagal memberikan rating');
+        }
       },
     }
   );
@@ -190,7 +221,7 @@ const Complaints = () => {
             ))}
           </div>
         ) : (
-          complaintsData?.data?.complaints?.map((complaint: any, index: number) => (
+          complaintsData?.data?.complaints?.map((complaint: Complaint, index: number) => (
             <motion.div
               key={complaint.id}
               initial={{ opacity: 0, y: 20 }}
@@ -246,7 +277,7 @@ const Complaints = () => {
                   <div className="mb-4">
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Lampiran:</p>
                     <div className="flex space-x-2">
-                      {JSON.parse(complaint.attachments).map((file: any, i: number) => (
+                      {JSON.parse(complaint.attachments).map((file: Attachment, i: number) => (
                         <span key={i} className="inline-flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">
                           <FileText className="w-3 h-3" />
                           <span>{file.originalName}</span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { 
   Search, 
@@ -15,12 +15,22 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { announcementsAPI } from '../services/api';
 
+interface Announcement {
+  id: string | number;
+  priority: string;
+  category: string;
+  created_at: string;
+  title: string;
+  content: string;
+  author_name: string;
+}
+
 const Announcements = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, error } = useQuery(
+  const { data, isLoading } = useQuery(
     ['announcements', page, selectedCategory, searchTerm],
     () => announcementsAPI.getAll({
       page,
@@ -138,7 +148,7 @@ const Announcements = () => {
             exit={{ opacity: 0 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {data?.data?.announcements?.map((announcement: any, index: number) => (
+            {data?.data?.announcements?.map((announcement: Announcement, index: number) => (
               <motion.article
                 key={announcement.id}
                 initial={{ opacity: 0, y: 20 }}

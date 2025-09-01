@@ -28,16 +28,16 @@ router.get('/', asyncHandler(async (req: express.Request, res: express.Response)
       LEFT JOIN users u ON a.author_id = u.id 
       WHERE a.status = 'published' AND (a.scheduled_at IS NULL OR a.scheduled_at <= NOW())
     `;
-    const params: any[] = [];
+    const params: (string | number)[] = [];
 
     if (category) {
-      query += ` AND a.category = $${params.length + 1}`;
-      params.push(category);
+      query += ` AND a.category = ${params.length + 1}`;
+      params.push(String(category));
     }
 
     if (search) {
-      query += ` AND (a.title ILIKE $${params.length + 1} OR a.content ILIKE $${params.length + 1})`;
-      params.push(`%${search}%`);
+            query += ` AND (a.title ILIKE ${params.length + 1} OR a.content ILIKE ${params.length + 1})`
+      params.push(`%${String(search)}%`);
     }
 
     query += ` ORDER BY a.priority DESC, a.created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
@@ -47,11 +47,11 @@ router.get('/', asyncHandler(async (req: express.Request, res: express.Response)
 
     // Get total count
     let countQuery = 'SELECT COUNT(*) FROM announcements WHERE status = \'published\'';
-    const countParams: any[] = [];
+    const countParams: (string | number)[] = [];
 
     if (category) {
-      countQuery += ` AND category = $${countParams.length + 1}`;
-      countParams.push(category);
+      countQuery += ` AND category = ${countParams.length + 1}`;
+      countParams.push(String(category));
     }
 
     const countResult = await client.query(countQuery, countParams);

@@ -1,6 +1,7 @@
 import multer from 'multer';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { Request } from 'express';
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -24,7 +25,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const fileFilter = (req: any, file: Express.Multer.File, cb: Function) => {
+const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   // Document files
   if (file.fieldname === 'documents') {
     const allowedTypes = /pdf|doc|docx|xls|xlsx|ppt|pptx|txt/;
